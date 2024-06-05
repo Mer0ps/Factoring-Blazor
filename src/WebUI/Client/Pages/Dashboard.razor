@@ -1,0 +1,31 @@
+﻿@page "/dashboard"
+@using Domain.Enums
+<PageTitle>Supplier</PageTitle>
+
+<div class="container">
+    @if (!WalletConnected)
+    {
+        <div class="d-flex flex-column justify-content-center mt-5">
+            <h3 class="text-center mb-4">Please connect to a wallet</h3>
+            <div class="btn btn-primary btn-lg px-4 mx-auto" data-bs-toggle="modal" data-bs-target="#WalletConnectionsModal">Login</div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column justify-content-center mt-4">
+            <div class="d-flex flex-column p-4 panel mx-auto mw-600 mb-5">
+                <MudCard>
+                    <MudCardContent>
+                        <MudText>Funds available : @FundsInSc</MudText>
+                        <MudText Typo="Typo.body2">
+                            These funds will be used to pay bills automatically on the due date.
+                        </MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="OpenDialog">Add more</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </div>
+        </div>
+    }
+</div>

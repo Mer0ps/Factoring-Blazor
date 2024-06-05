@@ -1,0 +1,32 @@
+﻿.toast {
+    user-select: none;
+    position: relative;
+    background-color: var(--bs-gray-900);
+    box-shadow: 0 1px 6px 0 var(--c-shadow);
+    border-radius: 0.25rem;
+    padding: .5rem 1rem;
+    width: auto;
+}
+
+.dismiss {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    margin-right: .5rem;
+}
+
+.text {
+    margin-right: 26px;
+}
+
+.bi-exclamation-diamond-fill {
+    font-size: 2rem;
+    color: goldenrod;
+}
+
+@media(hover: hover) and (pointer: fine) {
+    .dismiss:hover {
+        color: var(--bs-gray-600);
+    }
+}

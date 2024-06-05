@@ -1,0 +1,29 @@
+﻿@page "/invoice/{idContract:long}/{idInvoice:long}"
+@using Mx.NET.SDK.Provider
+<h3>History</h3>
+
+
+<div class="d-flex flex-column justify-content-center mt-4">
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel Text="History">
+
+            <MudTable Items="@(InvoiceDetail?.Histories)" Hover="true" ReadOnly="false" Breakpoint="Breakpoint.Sm" IsEditRowSwitchingBlocked="true" LoadingProgressColor="Color.Info">
+                <HeaderContent>
+                    <MudTh>txHash</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Executed</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Tx Hash">
+                        <a href="@($"{MultiversxNetwork.Provider.NetworkConfiguration.ExplorerUri}transactions/{context.TxHash}")" target="_blank">@context.TxHash</a>
+                    </MudTd>
+                    <MudTd DataLabel="Status">@context.Status</MudTd>
+                        <MudTd DataLabel="Executed">@context.TxExecutedAt</MudTd>
+                    </RowTemplate>
+                </MudTable>
+        </MudTabPanel>
+        <MudTabPanel Text="Pdf">
+                <PdfViewer PdfUrl="@($"https://chocolate-causal-quelea-236.mypinata.cloud/ipfs/{InvoiceDetail?.Invoice.Hash}")" />
+         </MudTabPanel>
+    </MudTabs>
+</div>

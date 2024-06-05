@@ -1,0 +1,74 @@
+﻿@page "/uploadInvoice"
+@using Domain.Enums
+<PageTitle>Invoice</PageTitle>
+
+<div class="container">
+    @if (!WalletConnected)
+    {
+        <div class="d-flex flex-column justify-content-center mt-5">
+            <h3 class="text-center mb-4">Please connect to a wallet</h3>
+            <div class="btn btn-primary btn-lg px-4 mx-auto" data-bs-toggle="modal" data-bs-target="#WalletConnectionsModal">Login</div>
+        </div>
+    }
+    else
+    {
+        @if (InvoiceModel.Contracts.Any())
+        {
+            <div class="d-flex flex-column justify-content-center mt-4">
+                <MudCard>
+                    <MudForm Model="@InvoiceModel" @ref="@form" ValidationDelay="0">
+                        <MudCardContent>
+                            <MudSelect @bind-Value="@InvoiceModel.IdContract" Label="Contract" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Contract is required!">
+                                @foreach (var contract in InvoiceModel.Contracts)
+                                {
+                                    <MudSelectItem Value="@contract.IdNullable">@contract.Id - @contract.ClientName</MudSelectItem>
+                                }
+                            </MudSelect>
+                            <div class="d-flex flex-row mb-4">
+                                <MudTextField @bind-Value="InvoiceModel.Amount" For="@(() => InvoiceModel.Amount)" Required="true" Immediate="true" Label="Amount" Class="me-2" Placeholder="e.g. 500,5" />
+
+                                <MudSelect T="string" @bind-Value="@InvoiceModel.TokenIdentifier" For="@(() => InvoiceModel.TokenIdentifier)" Label="Token Identifier"
+                                           AnchorOrigin="Origin.BottomCenter" Required="true">
+                                    @foreach (var token in InvoiceModel.TokenIdentifiers)
+                                    {
+                                        <MudSelectItem Value="@token.TokenIdentifier">@token.TokenIdentifier</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </div>
+                            <MudDatePicker Label="Issue Date" Editable="true" @bind-Date="InvoiceModel.IssueDate" Placeholder="Issue Date" />
+                            <MudDatePicker Label="Due Date" Editable="true" @bind-Date="InvoiceModel.DueDate" Placeholder="Due Date" />
+                            <MudFileUpload T="IBrowserFile" For="@(() => InvoiceModel.File)" @bind-Files="InvoiceModel.File" Required="true" RequiredError="Invoice file is required!">
+                                <ButtonTemplate>
+                                    <MudButton HtmlTag="label"
+                                    Variant="Variant.Filled"
+                                    Color="Color.Primary"
+                                    StartIcon="@Icons.Material.Filled.CloudUpload"
+                                    for="@context.Id">
+                                        Upload Files
+                                    </MudButton>
+                                    <MudButton OnClick="@context.Actions.ClearAsync"
+                                    Variant="Variant.Filled"
+                                    Color="Color.Primary"
+                                    StartIcon="@Icons.Material.Filled.Clear">
+                                        Clear Files
+                                    </MudButton>
+                                </ButtonTemplate>
+                            </MudFileUpload>
+                            <span>@InvoiceModel.File?.Name</span>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Submit</MudButton>
+                        </MudCardActions>
+                    </MudForm>
+                </MudCard>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column justify-content-center mt-4">
+                <h3 class="text-center mb-4">You must sign a contract with your client to be able to upload you invoices</h3>
+            </div>
+
+        }
+    }
+</div>

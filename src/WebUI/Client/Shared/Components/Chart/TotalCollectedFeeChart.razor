@@ -1,0 +1,5 @@
+﻿@page "/totalcollectedfee"
+@using MudBlazor
+@using System.Collections.Generic
+
+<MudChart ChartType="ChartType.StackedBar" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px" ChartOptions="@Options" />

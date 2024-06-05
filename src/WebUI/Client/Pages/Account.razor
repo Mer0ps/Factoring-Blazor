@@ -1,0 +1,44 @@
+﻿@page "/account"
+<PageTitle>Account</PageTitle>
+
+<div class="container">
+    @if (!WalletConnected)
+    {
+        <div class="d-flex flex-column justify-content-center mt-5">
+            <h3 class="text-center mb-4">Please connect to a wallet</h3>
+            <div class="btn btn-primary btn-lg px-4 mx-auto" data-bs-toggle="modal" data-bs-target="#WalletConnectionsModal">Login</div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column justify-content-center mt-4">
+            <div class="d-flex flex-column p-4 panel mx-auto mw-600 mb-5">
+                <EditForm Model="AccountDto" OnValidSubmit="HandleCreateAccountValidSubmit">
+
+                    <MudTextField @bind-Value="AccountDto.CompanyName" For="@(() => AccountDto.CompanyName)" Required="true" Immediate="true" Label="Company Name" Class="me-2" Placeholder="Google" />
+                    <MudTextField @bind-Value="AccountDto.RegistrationNumber" For="@(() => AccountDto.RegistrationNumber)" Required="true" Immediate="true" Label="Registration Number" Class="me-2" Placeholder="National registration number" />
+                    <MudTextField @bind-Value="AccountDto.VATNumber" For="@(() => AccountDto.VATNumber)" Required="true" TextChanged="HandleVATChanged" Immediate="true" Label="VAT Number" Class="me-2" Placeholder="VAT Number" />
+                    <MudTextField @bind-Value="AccountDto.WithdrawAddress" For="@(() => AccountDto.WithdrawAddress)" Required="true" Immediate="true" Label="Withdrawal Address" Class="me-2" Placeholder="e.g. erd1jvwp8jls52uada34h599x2l67czwgvtlneha2luhv6servg9m7zsavcj7g" />
+
+                    <MudSelect T="int?" @bind-Value="@AccountDto.LegalFormId" For="@(() => AccountDto.LegalFormId)" Label="Legal Form" Disabled="string.IsNullOrEmpty(AccountDto.VATNumber)" AnchorOrigin="Origin.BottomCenter" Required="true">
+                        @foreach (var legalForm in LegalFormSelectList)
+                        {
+                            <MudSelectItem T="int?" Value="@legalForm.Id">@legalForm.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+
+                    <MudSelect T="int?" @bind-Value="@AccountDto.BusinessActivityId" For="@(() => AccountDto.BusinessActivityId)" Label="Business Activity"  AnchorOrigin="Origin.BottomCenter" Required="true">
+                        @foreach (var businessActivity in BusinessActivitiesSelectList)
+                        {
+                            <MudSelectItem T="int?" Value="@businessActivity.Id">@businessActivity.ToString()"</MudSelectItem>
+                        }
+                    </MudSelect>
+
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create account</MudButton>
+
+
+                </EditForm>
+            </div>
+        </div>
+    }
+</div>

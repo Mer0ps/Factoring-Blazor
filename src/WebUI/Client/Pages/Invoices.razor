@@ -1,0 +1,36 @@
+﻿@page "/invoices"
+<h3>Invoices</h3>
+
+<MudTable Items="@invoices" Hover="true" ReadOnly="false" T="Application.Invoices.Queries.InvoiceDto" OnRowClick="RowClicked" Breakpoint="Breakpoint.Sm" IsEditRowSwitchingBlocked="true" Loading="@_loading" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>Issuer</MudTh>
+        <MudTh>Recipient</MudTh>
+        <MudTh>Hash</MudTh>
+        <MudTh>Amount</MudTh>
+        <MudTh>Status</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Issuer">@context.SupplierName</MudTd>
+        <MudTd DataLabel="Recipient">@context.ClientName</MudTd>
+        <MudTd DataLabel="Hash">@context.Hash</MudTd>
+            <MudTd DataLabel="Amount">@context.ESDTAmount.ToCurrencyString()</MudTd>
+        <MudTd DataLabel="Status">@context.Status</MudTd>
+        <MudTd DataLabel="">
+            @if (context.Status == Domain.Entities.Status.PendingValidation && context.SupplierId != DappAccount.AccountDto.Id)
+            {
+                <MudButton @onclick="() => Confirm(context, Domain.Entities.Status.Valid)" Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary">Confirm</MudButton>
+                <MudButton @onclick="() => Confirm(context, Domain.Entities.Status.Refused)" Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Error">Refuse</MudButton>
+            }
+
+            @if (context.Status == Domain.Entities.Status.PartiallyFunded && context.SupplierId != DappAccount.AccountDto.Id)
+            {
+                <MudButton @onclick="() => Pay(context)" Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary">Pay</MudButton>
+            }
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+

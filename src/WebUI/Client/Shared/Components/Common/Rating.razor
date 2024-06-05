@@ -1,0 +1,30 @@
+﻿<MudStack Row="true" Spacing="0">
+    @for (int i = 0; i < Decimal.Floor(RatingValue); i++)
+    {
+        <MudIcon Icon="@Icons.Material.Filled.Star" Color="Color.Warning" />
+        NumberOfStars++;
+    }
+
+    @if (RatingValue.ToString().IndexOf('.') > -1)
+    {
+        int decimalPart = int.Parse(Math.Round(RatingValue, 2).ToString().Split('.')[1]);
+
+        if (decimalPart > 0 && decimalPart <= 99)
+        {
+            <MudIcon Icon="@Icons.Material.Filled.StarHalf" Color="Color.Warning" />
+            NumberOfStars++;
+        }
+
+        @for (int i = NumberOfStars; i < 5; i++)
+        {
+            <MudIcon Icon="@Icons.Material.Filled.Star" Color="Color.Default" />
+        }
+    }
+</MudStack>
+
+@code {
+    [Parameter]
+    public decimal RatingValue { get; set; }
+
+    protected int NumberOfStars { get; set; }
+}

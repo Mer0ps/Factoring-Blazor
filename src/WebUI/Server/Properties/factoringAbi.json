@@ -1,0 +1,936 @@
+{
+  "buildInfo": {
+    "rustc": {
+      "version": "1.78.0",
+      "commitHash": "9b00956e56009bab2aa15d7bff10916599e3d6d6",
+      "commitDate": "2024-04-29",
+      "channel": "Stable",
+      "short": "rustc 1.78.0 (9b00956e5 2024-04-29)"
+    },
+    "contractCrate": {
+      "name": "factoring",
+      "version": "0.0.0"
+    },
+    "framework": {
+      "name": "multiversx-sc",
+      "version": "0.50.3"
+    }
+  },
+  "name": "Factoring",
+  "constructor": {
+    "inputs": [],
+    "outputs": []
+  },
+  "upgradeConstructor": {
+    "inputs": [],
+    "outputs": []
+  },
+  "endpoints": [
+    {
+      "name": "addInvoice",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "id_contract",
+          "type": "u64"
+        },
+        {
+          "name": "hash",
+          "type": "bytes"
+        },
+        {
+          "name": "amount",
+          "type": "BigUint"
+        },
+        {
+          "name": "issue_date",
+          "type": "u64"
+        },
+        {
+          "name": "due_date",
+          "type": "u64"
+        },
+        {
+          "name": "token_identifier",
+          "type": "EgldOrEsdtTokenIdentifier"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "confirmInvoice",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "id_contract",
+          "type": "u64"
+        },
+        {
+          "name": "id_invoice",
+          "type": "u64"
+        },
+        {
+          "name": "status",
+          "type": "Status"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "fundInvoice",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "id_contract",
+          "type": "u64"
+        },
+        {
+          "name": "id_invoice",
+          "type": "u64"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "payInvoice",
+      "mutability": "mutable",
+      "payableInTokens": [
+        "*"
+      ],
+      "inputs": [
+        {
+          "name": "id_contract",
+          "type": "u64"
+        },
+        {
+          "name": "id_invoice",
+          "type": "u64"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "payInvoiceAuto",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "id_contract",
+          "type": "u64"
+        },
+        {
+          "name": "id_invoice",
+          "type": "u64"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "fundRemainingAmount",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "id_contract",
+          "type": "u64"
+        },
+        {
+          "name": "id_invoice",
+          "type": "u64"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "calculateReliabilityScore",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "id_account",
+          "type": "u64"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "addProcolFunds",
+      "mutability": "mutable",
+      "payableInTokens": [
+        "*"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "name": "setHatomControllerAddress",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "sc_address",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "removeProcolFunds",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "token_identifier",
+          "type": "EgldOrEsdtTokenIdentifier"
+        },
+        {
+          "name": "amount",
+          "type": "BigUint"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "mintWithUnusedLiquidity",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "token_identifier",
+          "type": "EgldOrEsdtTokenIdentifier"
+        },
+        {
+          "name": "amount",
+          "type": "BigUint"
+        },
+        {
+          "name": "mm_sc_address",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "exitMarketFarm",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "mm_sc_address",
+          "type": "Address"
+        },
+        {
+          "name": "amount",
+          "type": "BigUint"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "withdrawLiquidity",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "token_identifier",
+          "type": "EgldOrEsdtTokenIdentifier"
+        },
+        {
+          "name": "amount",
+          "type": "BigUint"
+        },
+        {
+          "name": "mm_sc_address",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "claimFarmingRewards",
+      "mutability": "mutable",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "name": "addUserToAdminList",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "removeUserFromAdminList",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "addEuriborRate",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "timestamp",
+          "type": "u64"
+        },
+        {
+          "name": "rate",
+          "type": "u32"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "addAllowedToken",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "EgldOrEsdtTokenIdentifier"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "removeAllowedToken",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "EgldOrEsdtTokenIdentifier"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "getProtocolFunds",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "identifier",
+          "type": "EgldOrEsdtTokenIdentifier"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "name": "getCompany",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "id",
+          "type": "u64"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "Company"
+        }
+      ]
+    },
+    {
+      "name": "getCustomerContract",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "id",
+          "type": "u64"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "CustomerContract"
+        }
+      ]
+    },
+    {
+      "name": "getInvoicesByContract",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "id_contract",
+          "type": "u64"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "variadic<Invoice>",
+          "multi_result": true
+        }
+      ]
+    },
+    {
+      "name": "getContractsClientByAccount",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "id_account",
+          "type": "u64"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "variadic<u64>",
+          "multi_result": true
+        }
+      ]
+    },
+    {
+      "name": "getAvailableAssetByAccountAndIdentifier",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "id_account",
+          "type": "u64"
+        },
+        {
+          "name": "identifier",
+          "type": "EgldOrEsdtTokenIdentifier"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "name": "getFundsByAccount",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "id_account",
+          "type": "u64"
+        },
+        {
+          "name": "identifier",
+          "type": "EgldOrEsdtTokenIdentifier"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "name": "getHatomControllerAddress",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "Address"
+        }
+      ]
+    },
+    {
+      "name": "addCompany",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "id_offchain",
+          "type": "u64"
+        },
+        {
+          "name": "administrators",
+          "type": "List<Address>"
+        },
+        {
+          "name": "is_kyc",
+          "type": "bool"
+        },
+        {
+          "name": "withdraw_address",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "createFactoringContract",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "id_supplier",
+          "type": "u64"
+        },
+        {
+          "name": "id_client",
+          "type": "u64"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "signContract",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "id_contract",
+          "type": "u64"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "addCompanyAdministrator",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "company_id",
+          "type": "u64"
+        },
+        {
+          "name": "new_admin",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "addAccountFunds",
+      "mutability": "mutable",
+      "payableInTokens": [
+        "*"
+      ],
+      "inputs": [
+        {
+          "name": "id_account",
+          "type": "u64"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "removeAccountFunds",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "id_account",
+          "type": "u64"
+        },
+        {
+          "name": "token_identifier",
+          "type": "EgldOrEsdtTokenIdentifier"
+        },
+        {
+          "name": "amount",
+          "type": "BigUint"
+        }
+      ],
+      "outputs": []
+    }
+  ],
+  "events": [
+    {
+      "identifier": "invoice_add_event",
+      "inputs": [
+        {
+          "name": "id_contract",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "hash",
+          "type": "bytes",
+          "indexed": true
+        },
+        {
+          "name": "amount",
+          "type": "BigUint",
+          "indexed": true
+        },
+        {
+          "name": "due_date",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "invoice_id",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "timestamp",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "identifier",
+          "type": "EgldOrEsdtTokenIdentifier",
+          "indexed": true
+        },
+        {
+          "name": "euribor_rate",
+          "type": "u32",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "invoice_confirm_event",
+      "inputs": [
+        {
+          "name": "id_contract",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "id_invoice",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "status",
+          "type": "Status",
+          "indexed": true
+        },
+        {
+          "name": "timestamp",
+          "type": "u64",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "invoice_fund_event",
+      "inputs": [
+        {
+          "name": "id_contract",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "id_invoice",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "timestamp",
+          "type": "u64",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "invoice_pay_event",
+      "inputs": [
+        {
+          "name": "id_contract",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "id_invoice",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "pay_date",
+          "type": "u64",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "invoice_fully_fund_event",
+      "inputs": [
+        {
+          "name": "id_contract",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "id_invoice",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "timestamp",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "commission_fees",
+          "type": "BigUint",
+          "indexed": true
+        },
+        {
+          "name": "financing_fees",
+          "type": "BigUint",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "contract_create_event",
+      "inputs": [
+        {
+          "name": "id_supplier",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "id_client",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "id_contract",
+          "type": "u64",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "contract_sign_event",
+      "inputs": [
+        {
+          "name": "id_contract",
+          "type": "u64",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "company_create_event",
+      "inputs": [
+        {
+          "name": "id_offchain",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "id_company",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "score",
+          "type": "u8",
+          "indexed": true
+        },
+        {
+          "name": "fee",
+          "type": "u64",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "company_new_score_event",
+      "inputs": [
+        {
+          "name": "id_company",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "score",
+          "type": "u8",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "company_add_admin_event",
+      "inputs": [
+        {
+          "name": "id_offchain",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "address",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "company_add_funds_event",
+      "inputs": [
+        {
+          "name": "id_company",
+          "type": "u64",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "company_remove_funds_event",
+      "inputs": [
+        {
+          "name": "id_company",
+          "type": "u64",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "sc_add_admin_event",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "sc_remove_admin_event",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "sc_add_token_event",
+      "inputs": [
+        {
+          "name": "token_identifier",
+          "type": "EgldOrEsdtTokenIdentifier",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "sc_remove_token_event",
+      "inputs": [
+        {
+          "name": "token_identifier",
+          "type": "EgldOrEsdtTokenIdentifier",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "sc_add_funds_event",
+      "inputs": []
+    }
+  ],
+  "esdtAttributes": [],
+  "hasCallback": false,
+  "types": {
+    "Company": {
+      "type": "struct",
+      "fields": [
+        {
+          "name": "id_offchain",
+          "type": "u64"
+        },
+        {
+          "name": "administrators",
+          "type": "List<Address>"
+        },
+        {
+          "name": "is_kyc",
+          "type": "bool"
+        },
+        {
+          "name": "fee",
+          "type": "u64"
+        },
+        {
+          "name": "withdraw_address",
+          "type": "Address"
+        },
+        {
+          "name": "reliability_score",
+          "type": "u8"
+        }
+      ]
+    },
+    "CustomerContract": {
+      "type": "struct",
+      "fields": [
+        {
+          "name": "id_supplier",
+          "type": "u64"
+        },
+        {
+          "name": "id_client",
+          "type": "u64"
+        },
+        {
+          "name": "is_signed",
+          "type": "bool"
+        }
+      ]
+    },
+    "Invoice": {
+      "type": "struct",
+      "fields": [
+        {
+          "name": "hash",
+          "type": "bytes"
+        },
+        {
+          "name": "amount",
+          "type": "BigUint"
+        },
+        {
+          "name": "identifier",
+          "type": "EgldOrEsdtTokenIdentifier"
+        },
+        {
+          "name": "status",
+          "type": "Status"
+        },
+        {
+          "name": "issue_date",
+          "type": "u64"
+        },
+        {
+          "name": "due_date",
+          "type": "u64"
+        },
+        {
+          "name": "euribor_rate",
+          "type": "u32"
+        },
+        {
+          "name": "payed_date",
+          "type": "Option<u64>"
+        }
+      ]
+    },
+    "Status": {
+      "type": "enum",
+      "variants": [
+        {
+          "name": "PendingValidation",
+          "discriminant": 0
+        },
+        {
+          "name": "Valid",
+          "discriminant": 1
+        },
+        {
+          "name": "PartiallyFunded",
+          "discriminant": 2
+        },
+        {
+          "name": "Payed",
+          "discriminant": 3
+        },
+        {
+          "name": "FullyFunded",
+          "discriminant": 4
+        },
+        {
+          "name": "Refused",
+          "discriminant": 5
+        }
+      ]
+    }
+  }
+}

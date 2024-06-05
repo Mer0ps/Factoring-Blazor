@@ -1,0 +1,23 @@
+﻿.mw-600 {
+    max-width: 600px;
+    width: 100%;
+}
+
+.panel {
+    border: 0px solid #313434;
+    background-color: var(--bs-gray-900);
+    border-radius: .25rem;
+    box-shadow: 0 1px 6px 0 var(--c-shadow);
+}
+
+/*::deep .mud-charts-yaxis {
+    transform: translateX(25px);
+}*/
+
+/*.mud-chart-line {
+    overflow: visible;
+}*/
+
+/*::deep .mud-charts-line-series, ::deep .mud-charts-xaxis, ::deep .mud-charts-grid {
+    transform: translateX(20px);
+}*/

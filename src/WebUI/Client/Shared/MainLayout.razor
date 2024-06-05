@@ -1,0 +1,41 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<CascadingValue Value="@WalletConnected">
+    <CascadingValue Value="@DappAccount">
+        <div class="page">
+            <div class="sidebar">
+                <NavMenu />
+            </div>
+            <Login />
+            <TransactionsPanel />
+            <WaitingForMessageSignatureModal />
+            <WaitingForSignatureModal />
+
+            <main>
+                <div class="top-row px-3 px-sm-4">
+                    <div class="network">@CurrentNetwork</div>
+                    <div class="d-flex align-items-center">
+                        <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Light/Dark Mode" />
+                    </div>
+                </div>
+                @if (!_isInitialized)
+                {
+                    <div>Loading...</div>
+                }
+                else
+                {
+                    <article class="content px-4">
+                        @Body
+                    </article>
+                }
+
+                
+            </main>
+        </div>
+
+        <UpdateAvailableDetector />
+    </CascadingValue>
+</CascadingValue>

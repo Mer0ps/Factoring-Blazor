@@ -1,0 +1,36 @@
+﻿@page "/accounts"
+<h3>Accounts</h3>
+
+<MudTable @ref="table" @bind-SelectedItem="selectedAccount" Items="@accounts" Hover="true" ReadOnly="false" CanCancelEdit="true" Breakpoint="Breakpoint.Sm"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" IsEditRowSwitchingBlocked="true" Loading="@_loading" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Registration Number</MudTh>
+        <MudTh>VAT Number</MudTh>
+        <MudTh>KYC</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.CompanyName</MudTd>
+            <MudTd DataLabel="RegistrationNumber">@context.RegistrationNumber</MudTd>
+        <MudTd DataLabel="VATNumber">@context.VATNumber</MudTd>
+        <MudTd DataLabel="KYC">
+                <MudCheckBox @bind-Checked="@context.IsKyc" Disabled />
+        </MudTd>
+        <MudTd DataLabel="">
+            @if(!context.IsKyc)
+            {
+                <MudButton @onclick="() => Edit(context)" Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary">Validate</MudButton>
+            }
+        </MudTd>
+    </RowTemplate>
+     <RowEditingTemplate>
+            <MudTd DataLabel="Name">@context.CompanyName</MudTd>
+            <MudTd DataLabel="RegistrationNumber">@context.RegistrationNumber</MudTd>
+            <MudTd DataLabel="VATNumber">@context.VATNumber</MudTd>
+         <MudTd DataLabel="KYC">
+             <MudCheckBox @bind-Checked="@context.IsKyc" />
+         </MudTd>
+     </RowEditingTemplate>
+</MudTable>
+
+

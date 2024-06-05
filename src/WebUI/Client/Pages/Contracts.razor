@@ -1,0 +1,80 @@
+﻿@page "/contracts"
+<h3>Contracts to Sign</h3>
+
+<div class="container">
+    @if (!WalletConnected)
+    {
+        <div class="d-flex flex-column justify-content-center mt-5">
+            <h3 class="text-center mb-4">Please connect to a wallet</h3>
+            <div class="btn btn-primary btn-lg px-4 mx-auto" data-bs-toggle="modal" data-bs-target="#WalletConnectionsModal">Login</div>
+        </div>
+    }
+    else if (DappAccount.AccountDto == null || !DappAccount.AccountDto.OnChainId.HasValue)
+    {
+        <div class="d-flex flex-column justify-content-center mt-5">
+            <h3 class="text-center mb-4">Please wait the validation of your account</h3>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column justify-content-center mt-4">
+            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" ActivePanelIndexChanged="TabChanged">
+                <MudTabPanel Text="Initialize a contract">
+
+                    <div class="d-flex flex-column p-4 panel mx-auto mw-600 mb-5">
+                        <span class="fw-bold my-2">Recipient</span>
+                        <select class="form-control" @bind="@AccountModel.ClientId">
+                            <option value="">Select a recipient</option>
+                            @foreach (var account in AccountModel.Accounts)
+                            {
+                                <option value="@account.OnChainId">@account.CompanyName</option>
+                            }
+                        </select>
+                        <button class="btn btn-primary mx-auto mt-4" @onclick="CreateContrat">Initialize a contract</button>
+                    </div>
+                </MudTabPanel>
+                <MudTabPanel Text="My issuers">
+                    <MudTable Items="@contractsClient" Hover="true" ReadOnly="false" CanCancelEdit="true" Breakpoint="Breakpoint.Sm" IsEditRowSwitchingBlocked="true" Loading="@_loading" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Contract Id</MudTh>
+                            <MudTh>Name</MudTh>
+                            <MudTh>Signed</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Contract Id">@context.Id</MudTd>
+                                <MudTd DataLabel="Name">@context.SupplierName</MudTd>
+                                <MudTd DataLabel="Signed">
+                                    <MudCheckBox @bind-Checked="@context.IsSigned" Disabled />
+                                </MudTd>
+                             <MudTd DataLabel="">
+                                 <MudButton Disabled="@context.IsSigned" @onclick="() => Edit(context)" Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary">Sign</MudButton>
+                             </MudTd>
+                         </RowTemplate>
+                     </MudTable>
+                 </MudTabPanel>
+                 <MudTabPanel Text="My recipients">
+                     <MudTable Items="@contractsSupplier" Hover="true" ReadOnly="false" CanCancelEdit="true" Breakpoint="Breakpoint.Sm" IsEditRowSwitchingBlocked="true" Loading="@_loading" LoadingProgressColor="Color.Info">
+                         <HeaderContent>
+                             <MudTh>Contract Id</MudTh>
+                             <MudTh>Name</MudTh>
+                             <MudTh>Signed</MudTh>
+                         </HeaderContent>
+                         <RowTemplate>
+                             <MudTd DataLabel="Contract Id">@context.Id</MudTd>
+                             <MudTd DataLabel="Name">@context.ClientName</MudTd>
+                                <MudTd DataLabel="Signed">
+                                    <MudCheckBox @bind-Checked="@context.IsSigned" Disabled />
+                             </MudTd>
+                         </RowTemplate>
+                     </MudTable>
+                 </MudTabPanel>
+             </MudTabs>
+         </div>
+    }
+</div>
+
+
+
+
+
+

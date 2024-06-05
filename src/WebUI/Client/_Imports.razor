@@ -1,0 +1,42 @@
+﻿@using System.Net.Http
+@using System.Net.Http.Json
+
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Components.WebAssembly.Http
+@using Microsoft.JSInterop
+
+@using MudBlazor
+
+@using Mx.Blazor.DApp.Client
+@using Mx.Blazor.DApp.Client.OpenAPI
+@using Mx.Blazor.DApp.Client.Services;
+@using Mx.Blazor.DApp.Client.Services.Wallet;
+@using Mx.Blazor.DApp.Client.Shared
+@using Mx.Blazor.DApp.Client.App.ExtensionMethods
+@using Mx.Blazor.DApp.Client.App.Constants
+@using Mx.Blazor.DApp.Client.Shared.Components.Common
+@using Mx.Blazor.DApp.Client.Shared.Components.Login
+@using Mx.Blazor.DApp.Client.Shared.Components.Modals
+@using Mx.Blazor.DApp.Client.Shared.Components.Transactions
+@using Mx.Blazor.DApp.Client.Services.Containers
+@using Mx.NET.SDK.Provider
+
+@inject IHttpService Http
+@inject FactoringClient FactoringClient
+@inject IJSRuntime JsRuntime
+@inject ICopyService CopyService
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ISyncLocalStorageService LocalStorage
+@inject Blazored.SessionStorage.ISyncSessionStorageService SessionStorage
+@inject WalletManagerService WalletManager
+@inject WalletProviderContainer WalletProvider
+@inject NativeAuthService NativeAuth
+@inject TransactionsContainer TransactionsContainer
+@inject AccountContainer AccountContainer
+@inject ApiProvider ApiProvider
+@inject IDialogService Dialog
+@inject ISyncLocalStorageService LocalStorage

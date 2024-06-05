@@ -1,0 +1,20 @@
+﻿<MudDialog>
+    <DialogContent>
+
+        <div class="d-flex flex-row mb-4">
+            <MudTextField @bind-Value="Funds" For="@(() => Funds)" Required="true" Immediate="true" Label="Amount" Class="me-2" Placeholder="e.g. 500,5" />
+
+            <MudSelect T="string" @bind-Value="@TokenIdentifier" For="@(() => TokenIdentifier)" Label="Token Identifier"
+                       AnchorOrigin="Origin.BottomCenter" Required="true" >
+                @foreach (var token in Tokens)
+                {
+                    <MudSelectItem Value="@token.TokenIdentifier">@token.TokenIdentifier</MudSelectItem>
+                }
+            </MudSelect>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Add">Add</MudButton>
+    </DialogActions>
+</MudDialog>

@@ -1,0 +1,110 @@
+﻿@page "/administration"
+<PageTitle>Account</PageTitle>
+
+<div class="container">
+    @if (!WalletConnected)
+    {
+        <div class="d-flex flex-column justify-content-center mt-5">
+            <h3 class="text-center mb-4">Please connect to a wallet</h3>
+            <div class="btn btn-primary btn-lg px-4 mx-auto" data-bs-toggle="modal" data-bs-target="#WalletConnectionsModal">Login</div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column justify-content-center mt-4">
+            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" ActivePanelIndexChanged="HandleTabChange">
+                <MudTabPanel Text="Adminatrators">
+
+                    <EditForm Model="Administrator" OnValidSubmit="HandleAdministratorValidSubmit">
+                        <DataAnnotationsValidator />
+
+                        <div class="d-flex flex-row mb-4">
+                            <MudTextField @bind-Value="Administrator.Address" For="@(() => Administrator.Address)" Immediate="true" Label="Address" Class="me-2" Placeholder="e.g. erd1jvwp8jls52uada34h599x2l67czwgvtlneha2luhv6servg9m7zsavcj7g" />
+                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add</MudButton>
+
+                        </div>
+                    </EditForm>
+
+
+                    <MudTable Items="@admins" Hover="true" ReadOnly="false" CanCancelEdit="true" Breakpoint="Breakpoint.Sm"
+                              IsEditRowSwitchingBlocked="true" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Address</MudTh>
+                            <MudTh>Creation date</MudTh>
+                        </HeaderContent>
+                        <RowTemplate Context="scAdmin">
+                            <MudTd DataLabel="Address">@scAdmin.Address</MudTd>
+                                <MudTd DataLabel="Creation date">@scAdmin.CreatedAt</MudTd>
+                                <MudTd DataLabel="">
+                                    <MudButton @onclick="() => DeleteAdmin(scAdmin.Address)" Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Error">Delete</MudButton>
+
+                                </MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                </MudTabPanel>
+                    <MudTabPanel Text="Tokens">
+
+                        <EditForm Model="WhitelistedToken" OnValidSubmit="HandleTokenValidSubmit">
+                            <DataAnnotationsValidator />
+
+                            <div class="d-flex flex-row mb-4">
+                                <MudTextField @bind-Value="WhitelistedToken.TokenIdentifier" For="@(() => WhitelistedToken.TokenIdentifier)" Immediate="true" Label="Token Identifier" Class="me-2" Placeholder="e.g. TOKEN-123456" />
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add</MudButton>
+
+                            </div>
+                        </EditForm>
+
+
+                        <MudTable Items="@tokens" Hover="true" ReadOnly="false" CanCancelEdit="true" Breakpoint="Breakpoint.Sm"
+                                  IsEditRowSwitchingBlocked="true" LoadingProgressColor="Color.Info">
+                            <HeaderContent>
+                                <MudTh>Token Identifier</MudTh>
+                                <MudTh>MoneyMarket</MudTh>
+                                <MudTh>Hatom Token Identifier</MudTh>
+                            </HeaderContent>
+                            <RowTemplate Context="token">
+                                <MudTd DataLabel="Token Identifier">@token.TokenIdentifier</MudTd>
+                                <MudTd DataLabel="MoneyMarket">@token.MoneyMarketAddress</MudTd>
+                                <MudTd DataLabel="Hatom Token Identifier">@token.HTokenIdentifier</MudTd>
+                                <MudTd DataLabel="">
+                                    <MudButton @onclick="() => UpdateToken(token)" Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary">Update</MudButton>
+                                    <MudButton @onclick="() => DeleteToken(token.TokenIdentifier)" Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Error">Delete</MudButton>
+
+                                </MudTd>
+                            </RowTemplate>
+                            <RowEditingTemplate Context="token">
+                                <MudTd DataLabel="Token Identifier">@token.TokenIdentifier</MudTd>
+                                <MudTd DataLabel="MoneyMarket">
+                                    <MudTextField @bind-Value="token.MoneyMarketAddress"
+                                                  Immediate="true"
+                                               Label="MoneyMarket" />
+                                </MudTd>
+                                 <MudTd DataLabel="Hatom Token Identifier">
+                                     <MudTextField @bind-Value="token.HTokenIdentifier"
+                                                   Immediate="true"
+                                                   Label="Hatom Token Identifier" />
+                                 </MudTd>
+                         </RowEditingTemplate>
+                        </MudTable>
+                    </MudTabPanel>
+
+                    
+                    <MudTabPanel Text="Hatom parameters">
+                        <EditForm Model="HatomAdminModel" OnValidSubmit="HandleHatomAdminSubmit">
+                            <DataAnnotationsValidator />
+
+                            <div class="d-flex flex-row mb-4">
+                                <MudTextField @bind-Value="HatomAdminModel.Address" For="@(() => HatomAdminModel.Address)" Immediate="true" Label="Address" Class="me-2" Placeholder="e.g. erd1jvwp8jls52uada34h599x2l67czwgvtlneha2luhv6servg9m7zsavcj7g" />
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add</MudButton>
+
+                            </div>
+                            @if (!string.IsNullOrEmpty(@HatomAdminModel.CurrentAddress))
+                            {
+                                <MudText>Current controller address : @HatomAdminModel.CurrentAddress</MudText>
+                            }
+                        </EditForm>
+                    </MudTabPanel>
+            </MudTabs>
+        </div>
+    }
+</div>

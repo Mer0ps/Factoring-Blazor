@@ -1,0 +1,9 @@
+﻿@page "/overduechart"
+@using MudBlazor
+@using System.Collections.Generic
+
+<MudCard>
+    <MudCardContent>
+        <MudChart ChartType="ChartType.Line" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px" ChartOptions="@Options" />
+    </MudCardContent>
+</MudCard>

@@ -1,0 +1,2792 @@
+{
+  "buildInfo": {
+    "rustc": {
+      "version": "1.74.0-nightly",
+      "commitHash": "8550f15e148407159af401e02b1d9259762b3496",
+      "commitDate": "2023-08-27",
+      "channel": "Nightly",
+      "short": "rustc 1.74.0-nightly (8550f15e1 2023-08-27)"
+    },
+    "contractCrate": {
+      "name": "rewards-booster",
+      "version": "0.0.0"
+    },
+    "framework": {
+      "name": "multiversx-sc",
+      "version": "0.43.5"
+    }
+  },
+  "docs": [
+    "RewardsBooster Smart Contract",
+    "",
+    "The `RewardsBooster` is an innovative smart contract crafted to enhance the distribution of rewards for users",
+    "staking their tokens. By staking tokens, users can earn boosted rewards that are dynamically adjusted based on",
+    "various metrics.",
+    ""
+  ],
+  "name": "RewardsBooster",
+  "constructor": {
+    "docs": [
+      "Initializes the contract with essential parameters and an optional admin address.",
+      "",
+      "# Arguments:",
+      "",
+      "- `stake_token_id` - The token identifier for staking.",
+      "- `controller` - The address for the Controller smart contract.",
+      "- `staking_ratio_threshold` - The staking ratio threshold used for rewards penalties.",
+      "- `cooldown_period` - The cooldown period before staked tokens can be claimed.",
+      "- `opt_admin` - An optional admin address.",
+      "",
+      "Notes:",
+      "",
+      "- If the admin address is not provided, the admin will be set as the deployer.",
+      "- If the contract is being deployed for the first time, all provided parameters will be set.",
+      "- If the contract is being upgraded, no parameter will be overwritten.",
+      ""
+    ],
+    "inputs": [
+      {
+        "name": "stake_token_id",
+        "type": "TokenIdentifier"
+      },
+      {
+        "name": "controller",
+        "type": "Address"
+      },
+      {
+        "name": "staking_ratio_threshold",
+        "type": "BigUint"
+      },
+      {
+        "name": "cooldown_period",
+        "type": "u64"
+      },
+      {
+        "name": "opt_admin",
+        "type": "optional<Address>",
+        "multi_arg": true
+      }
+    ],
+    "outputs": []
+  },
+  "endpoints": [
+    {
+      "docs": [
+        "Returns the current admin address.",
+        ""
+      ],
+      "name": "getAdmin",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "Address"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Returns the current pending admin address, if there is one.",
+        ""
+      ],
+      "name": "getPendingAdmin",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "Option<Address>"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Sets the pending admin address to the given address.",
+        "",
+        "# Arguments:",
+        "",
+        "- `new_pending_admin` - The new pending admin address.",
+        ""
+      ],
+      "name": "setPendingAdmin",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "pending_admin",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Attempts to accept the pending admin, which must be set first using the `set_pending_admin` endpoint."
+      ],
+      "name": "acceptAdmin",
+      "mutability": "mutable",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "A utility function to highlight that this smart contract is a Rewards Booster.",
+        ""
+      ],
+      "name": "isRewardsBooster",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Checks whether the current state of the smart contract is active.",
+        ""
+      ],
+      "name": "isActive",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Checks whether the current state of the smart contract is finalized.",
+        ""
+      ],
+      "name": "isFinalized",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Retrieves the total amount of collateral tokens of a given money market considering only the accounts that have",
+        "an stake in such market.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market` - The address of the money market for which to retrieve the total collateral tokens.",
+        ""
+      ],
+      "name": "getStoredTotalCollateralTokens",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Retrieves the amount of collateral tokens of a given money market and account. It's value will be correct once",
+        "the account has initialized its collateral in this smart contract and while this smart contract is a market",
+        "observer at the Controller.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market`: The address of the money market.",
+        "- `account`: The account for which to retrieve the collateral tokens.",
+        ""
+      ],
+      "name": "getStoredAccountCollateralTokens",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "account",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Retrieves the accrued rewards for a given account and rewards token ID.",
+        "",
+        "# Arguments:",
+        "",
+        "- `account` - The account for which to retrieve the accrued rewards.",
+        "- `rewards_token_id` - The ID of the rewards token for which to retrieve the accrued rewards.",
+        ""
+      ],
+      "name": "getAccountAccruedRewards",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "Address"
+        },
+        {
+          "name": "rewards_token_id",
+          "type": "EgldOrEsdtTokenIdentifier"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Retrieves the staked amount for a given account between all money markets.",
+        "",
+        "# Arguments:",
+        "",
+        "- `account`: The account for which to retrieve the staked amount.",
+        ""
+      ],
+      "name": "getAccountStake",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Retrieves the staked amount for a given account in a specific money market.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market`: The address of the money market.",
+        "- `account`: The account for which to retrieve the staked amount.",
+        ""
+      ],
+      "name": "getAccountMarketStake",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "account",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Retrieves the total staked amount across all accounts and money markets.",
+        ""
+      ],
+      "name": "getTotalStake",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Retrieves the cooldown period for unstaking.",
+        ""
+      ],
+      "name": "getCooldownPeriod",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Retrieves the price integral coordinates for a given money market. The price integral is defined as the integral",
+        "of the quotient between the stake token price and the collateral token price, both in the same numeraire. Also,",
+        "this value is in wad units.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market`: The address of the money market.",
+        ""
+      ],
+      "name": "getPriceIntegral",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "tuple<u64,BigUint>"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Retrieves the price integral coordinates for a given money market and account. The price integral is defined as",
+        "the integral of the quotient between the stake token price and the collateral token price, both in the same",
+        "numeraire. Also, this value is in wad units. If the account has not been initialized, the function will return",
+        "the price integral of the market.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market`: The address of the money market.",
+        "- `account`: The account for which to retrieve the sanction index.",
+        ""
+      ],
+      "name": "getAccountPriceIntegral",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "account",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "tuple<u64,BigUint>"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Retrieves the total undistributed or penalized rewards for a given token identifier.",
+        "",
+        "# Arguments:",
+        "",
+        "- `rewards_token_id`: The token identifier of the rewards token.",
+        ""
+      ],
+      "name": "getPenalizedRewards",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "rewards_token_id",
+          "type": "EgldOrEsdtTokenIdentifier"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Retrieves the last fetched exchange rate for a given money market.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market`: The address of the money market.",
+        ""
+      ],
+      "name": "getLastExchangeRate",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "tuple<u64,BigUint>"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Retrieves the last fetched underlying price for a given money market.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market`: The address of the money market.",
+        ""
+      ],
+      "name": "getLastUnderlyingPrice",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "tuple<u64,BigUint>"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Retrieves a reliable exchange rate from the money market.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market`: The address of the money market.",
+        ""
+      ],
+      "name": "getReliableExchangeRate",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Retrieves a reliable price from a given money market underlying.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market`: The address of the money market.",
+        ""
+      ],
+      "name": "getReliableUnderlyingPrice",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Activates the Booster. The activation can only occur if this smart contract is set as a market observer on",
+        "the Controller.",
+        "",
+        "# Notes",
+        "",
+        "- can only be called by the admin",
+        ""
+      ],
+      "name": "activate",
+      "mutability": "mutable",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Deactivates the Booster.",
+        "",
+        "# Notes",
+        "",
+        "- can only be called by the admin",
+        ""
+      ],
+      "name": "deactivate",
+      "mutability": "mutable",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Finalizes the Booster. From this point onwards it can be deprecated from the Controller.",
+        ""
+      ],
+      "name": "finalize",
+      "mutability": "mutable",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Sets the rebalance method, which either forces all users to have their stakes balanced with the default weights",
+        "or allows them to have their stakes balanced with custom weights.",
+        "",
+        "# Arguments:",
+        "",
+        "- `rebalance_method` - The desired rebalance method, either `Default` or `Custom`.",
+        ""
+      ],
+      "name": "setRebalanceMethod",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "rebalance_method",
+          "type": "RebalanceMethod"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Updates the pricing Oracle smart contract address.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin.",
+        "- The Oracle's address will be fetched from the Controller.",
+        ""
+      ],
+      "name": "updatePriceOracle",
+      "mutability": "mutable",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Sets the cooldown period for the protocol.",
+        "",
+        "# Arguments:",
+        "",
+        "- `cooldown_period` - The desired cooldown period in seconds.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin.",
+        ""
+      ],
+      "name": "setCooldownPeriod",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "cooldown_period",
+          "type": "u64"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Sets the staking ratio threshold for the protocol.",
+        "",
+        "# Arguments:",
+        "",
+        "- `staking_ratio_threshold` - The desired staking ratio threshold value.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin.",
+        ""
+      ],
+      "name": "setStakingRatioThreshold",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "staking_ratio_threshold",
+          "type": "BigUint"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Sets the price time threshold, which is considered when fetching new exchange rates from Money Markets or prices",
+        "from the Oracle.",
+        "",
+        "# Arguments:",
+        "",
+        "- `price_time_threshold` - The desired price time threshold value.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin.",
+        "- If the threshold equals to zero, the price will be fetched every time, even in the same block.",
+        ""
+      ],
+      "name": "setPriceTimeThreshold",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "price_time_threshold",
+          "type": "u64"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Sets the Rewards Manager of the protocol.",
+        "",
+        "# Arguments:",
+        "",
+        "- `rewards_manager` - The address of the new Rewards Manager.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin.",
+        ""
+      ],
+      "name": "setRewardsManager",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "rewards_manager",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Sets the maximum amount of rewards batches per money market.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market` - The address of the money market smart contract.",
+        "- `new_max_rewards_batches` - The new maximum amount of rewards batches.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin.",
+        "- The provided address must be a whitelisted money market.",
+        ""
+      ],
+      "name": "setMaxRewardsBatches",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "max_rewards_batches",
+          "type": "u32"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Sets the maximum slippage allowed for configuration swaps.",
+        "",
+        "# Arguments:",
+        "",
+        "- `new_max_slippage` - The new maximum slippage allowed.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin.",
+        ""
+      ],
+      "name": "setMaxSlippage",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "max_slippage",
+          "type": "BigUint"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Adds a rewards batch to the specified money market. EGLD or ESDT tokens are supported.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market` - The address of the money market smart contract.",
+        "- `period` - The period of time in seconds in which rewards are distributed.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin or rewards manager.",
+        "- The provided address must be whitelisted money market.",
+        "- Should be paid with the rewards token.",
+        ""
+      ],
+      "name": "setRewardsBatch",
+      "mutability": "mutable",
+      "payableInTokens": [
+        "*"
+      ],
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "period",
+          "type": "u64"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Adds an amount of reward token to an existing rewards batch maintaining the same speed.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market` - The address of the money market smart contract.",
+        "- `batch_id` - The rewards batch identifier.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin or rewards manager.",
+        ""
+      ],
+      "name": "addRewardsBatch",
+      "mutability": "mutable",
+      "payableInTokens": [
+        "*"
+      ],
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "batch_id",
+          "type": "u32"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Cancel a specified rewards batch. Remaining tokens are sent back to a beneficiary.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market` - The address of the money market smart contract.",
+        "- `batch_id` - The rewards batch identifier.",
+        "- `opt_to` - The beneficiary address for the remaining tokens (optional).",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin or rewards manager.",
+        "- The caller is selected if no beneficiary is given.",
+        ""
+      ],
+      "name": "cancelRewardsBatch",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "batch_id",
+          "type": "u32"
+        },
+        {
+          "name": "opt_to",
+          "type": "optional<Address>",
+          "multi_arg": true
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Removes a specified rewards batch from the array of rewards batches iff it has been fully distributed.",
+        "",
+        "# Arguments",
+        "",
+        "- `money_market` - The address of the money market smart contract.",
+        "- `batch_id` - The rewards batch identifier.",
+        "",
+        "# Notes",
+        "",
+        "- Can be called by anyone.",
+        "- Takes into consideration possible rounding errors but it is conservative.",
+        ""
+      ],
+      "name": "removeRewardsBatch",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "batch_id",
+          "type": "u32"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Removes a specified rewards batch from the array of rewards batches iff it has been fully distributed within a given",
+        "tolerance amount.",
+        "",
+        "# Arguments",
+        "",
+        "- `money_market` - The address of the money market smart contract.",
+        "- `batch_id` - The rewards batch identifier.",
+        "- `tolerance` - The tolerance in wad, such that 1 wad = 100%.",
+        "",
+        "# Notes",
+        "",
+        "- Can only be called by the admin or rewards manager.",
+        ""
+      ],
+      "name": "adminRemoveRewardsBatch",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "batch_id",
+          "type": "u32"
+        },
+        {
+          "name": "tolerance",
+          "type": "BigUint"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Updates a given rewards batch based on a new speed. The new speed of rewards also changes the remaining distribution",
+        "time period.",
+        "",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market` - The address of the money market smart contract.",
+        "- `batch_id` - The rewards batch identifier.",
+        "- `new_speed` - The new speed of rewards in wad.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin or rewards manager.",
+        ""
+      ],
+      "name": "updateRewardsBatchSpeed",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "batch_id",
+          "type": "u32"
+        },
+        {
+          "name": "new_speed",
+          "type": "BigUint"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Updates a given rewards batch based on a new period. The new period also changes the speed of rewards.",
+        "",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market` - The address of the money market smart contract.",
+        "- `batch_id` - The rewards batch identifier.",
+        "- `new_dt` - The new period.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin or rewards manager.",
+        ""
+      ],
+      "name": "updateRewardsBatchRemainingPeriod",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "batch_id",
+          "type": "u32"
+        },
+        {
+          "name": "new_dt",
+          "type": "u64"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Adds support for boosting rewards batches by converting the rewards batch tokens into Hatom's governance tokens",
+        "with a premium.",
+        "",
+        "# Arguments:",
+        "",
+        "- `egld_wrapper` - the address of the EGLD wrapper smart contract",
+        "- `router` - the address of the router smart contract",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin.",
+        ""
+      ],
+      "name": "supportRewardsBatchBoosting",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "egld_wrapper",
+          "type": "Address"
+        },
+        {
+          "name": "router",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Enables support for boosting rewards batches.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin.",
+        ""
+      ],
+      "name": "enableRewardsBatchBoosting",
+      "mutability": "mutable",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Disables support for boosting rewards batches.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin.",
+        ""
+      ],
+      "name": "disableRewardsBatchBoosting",
+      "mutability": "mutable",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Boosts the rewards of a given rewards token by converting the rewards tokens into Hatom's governance token with",
+        "a premium.",
+        "",
+        "# Arguments:",
+        "",
+        "- `premium` - the premium in wad, such that 1 wad = 100%.",
+        "- `fwd_swap_amount` - the amount of tokens to swap.",
+        "- `fwd_swap_path` - the swap path to convert the rewards batch tokens into Hatom's governance tokens.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin or rewards manager.",
+        "- If rewards token is EGLD, swaps will add a EGLD => WEGLD step first. Also, the swap path needs to use the",
+        "  WEGLD token identifier.",
+        ""
+      ],
+      "name": "boostRewards",
+      "mutability": "mutable",
+      "payableInTokens": [
+        "*"
+      ],
+      "inputs": [
+        {
+          "name": "premium",
+          "type": "BigUint"
+        },
+        {
+          "name": "fwd_swap_amount",
+          "type": "BigUint"
+        },
+        {
+          "name": "fwd_swap_path",
+          "type": "List<SwapStep>"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Updates the premium of a given booster and, if a payment is provided, adds it to the booster's amount.",
+        "",
+        "# Arguments:",
+        "",
+        "- `rewards_token_id` - the rewards token identifier for which we wish to update its booster.",
+        "- `premium` - the premium in wad, such that 1 wad = 100%.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin or rewards manager.",
+        "- Cannot change the swap path. That requires canceling the booster and creating a new one.",
+        ""
+      ],
+      "name": "updateBooster",
+      "mutability": "mutable",
+      "payableInTokens": [
+        "*"
+      ],
+      "inputs": [
+        {
+          "name": "rewards_token_id",
+          "type": "EgldOrEsdtTokenIdentifier"
+        },
+        {
+          "name": "premium",
+          "type": "BigUint"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Cancels a given booster and sends the remaining tokens back to the caller.",
+        "",
+        "# Arguments:",
+        "",
+        "- `rewards_token_id` - the rewards token identifier for which we wish to cancel its booster.",
+        "- `opt_to` - the beneficiary address for the remaining tokens (optional).",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin or rewards manager.",
+        ""
+      ],
+      "name": "cancelBooster",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "rewards_token_id",
+          "type": "EgldOrEsdtTokenIdentifier"
+        },
+        {
+          "name": "opt_to",
+          "type": "optional<Address>",
+          "multi_arg": true
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Withdraws the undistributed or penalized rewards.",
+        "",
+        "# Arguments:",
+        "",
+        "- `token_id` - The rewards token identifier.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the admin or rewards manager.",
+        "- Withdraws the total undistributed amounts for the specified token ID or EGLD and sends them to the admin",
+        "  address.",
+        ""
+      ],
+      "name": "withdrawnPenalizedRewards",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "rewards_token_id",
+          "type": "EgldOrEsdtTokenIdentifier"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Initializes the account collateral for all current and future money markets belonging to the lending protocol.",
+        "Once an account collateral is tracked, it will be tracked forever or until this smart contract is not anymore a",
+        "market observer.",
+        ""
+      ],
+      "name": "initAccountCollateral",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "This endpoint is called by the Controller smart contract whenever an account changes its collateral.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market`: The address of the money market, which reflects the type of collateral.",
+        "- `account`: The address of the account.",
+        "- `tokens`: The new total amount of collateral tokens for the account.",
+        "",
+        "# Notes:",
+        "",
+        "- Can only be called by the Controller smart contract.",
+        ""
+      ],
+      "name": "onMarketChange",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "account",
+          "type": "Address"
+        },
+        {
+          "name": "tokens",
+          "type": "BigUint"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Performs a price integration for all whitelisted money markets. The actual integrated variable is the quotient",
+        "between the stake token price and the collateral price. This endpoint can be called by anyone and the integral",
+        "will be more reliable the more often it is called.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_markets`: An array of money market addresses.",
+        ""
+      ],
+      "name": "integratePrices",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "money_markets",
+          "type": "List<Address>"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Returns the account penalty factor for a given money market and account. The penalty factor is a value between 0",
+        "and 1 that represents the percentage of rewards the account is not eligible to receive. The penalty factor is",
+        "calculated based on the account's staking ratio (its stake value divided by its collateral value on a money",
+        "market basis) and a given staking ratio threshold.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_market`: The money market address.",
+        "- `account`: The account address.",
+        ""
+      ],
+      "name": "getAccountPenaltyFactor",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "account",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Rebalances the portfolio of an account by updating its stakes on each money markets. The new portfolio can be",
+        "defined either by explicit amounts for each money market or by using the default portfolio, which is a portfolio",
+        "that is automatically calculated based on the account's collateral on each money market.",
+        "",
+        "# Arguments:",
+        "",
+        "- `markets`: An array of market addresses.",
+        "- `amounts`: An array of stake amounts corresponding to the markets vector.",
+        "",
+        "# Notes:",
+        "",
+        "- If the `markets` and `amounts` arrays are empty, the default portfolio will be used.",
+        ""
+      ],
+      "name": "rebalancePortfolio",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "markets",
+          "type": "List<Address>"
+        },
+        {
+          "name": "amounts",
+          "type": "List<BigUint>"
+        },
+        {
+          "name": "opt_account",
+          "type": "optional<Address>",
+          "multi_arg": true
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Computes the default portfolio for an account. The default portfolio is a portfolio that is automatically",
+        "calculated based on the account's collateral on each money market and its total stake. The default portfolio is",
+        "computed by calculating the percentage of collateral that each money market represents from the total collateral",
+        "and then multiplying that percentage by the total stake.",
+        "",
+        "# Arguments:",
+        "",
+        "- `account`: The address of the account.",
+        ""
+      ],
+      "name": "defaultPortfolio",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "tuple<List<Address>,List<BigUint>>"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Updates the state of all rewards batches for the given money markets.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_markets`: An array of money market addresses.",
+        "",
+        "# Notes:",
+        "",
+        "- If no markets are provided, then all whitelisted money markets will be updated.",
+        ""
+      ],
+      "name": "updateRewardsBatchesState",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "money_markets",
+          "type": "List<Address>"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Distributes all rewards from all rewards batches for the given money markets to the given account.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_markets`: An array of money market addresses.",
+        "- `account`: The address of the account.",
+        "",
+        "# Notes:",
+        "",
+        "- If no markets are provided, then all whitelisted money markets will be used.",
+        ""
+      ],
+      "name": "distributeAccountRewards",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "money_markets",
+          "type": "List<Address>"
+        },
+        {
+          "name": "account",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Distributes all rewards from all rewards batches for the given money markets to the given accounts.",
+        "",
+        "# Arguments:",
+        "",
+        "- `money_markets`: An array of money market addresses.",
+        "- `account`: An array of account addresses.",
+        "",
+        "# Notes:",
+        "",
+        "- If no markets are provided, then all whitelisted money markets will be used.",
+        "- If no accounts are provided, then only the caller will get his rewards distributed.",
+        ""
+      ],
+      "name": "distributeRewards",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "money_markets",
+          "type": "List<Address>"
+        },
+        {
+          "name": "accounts",
+          "type": "List<Address>"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Sends all rewards from all rewards batches for the given money markets to the given account.",
+        "",
+        "# Arguments:",
+        "",
+        "- `boost`: Whether to boost the rewards or not.",
+        "- `money_markets`: An array of money market addresses.",
+        "- `accounts`: An array of account addresses.",
+        "- `opt_min_boosted_rewards_out`: An optional minimum amount of boosted rewards out.",
+        "",
+        "# Notes:",
+        "",
+        "- If `boost` is enabled, then the rewards will be boosted using the rewards booster.",
+        "- If no money markets are specified, then all whitelisted money markets will be used.",
+        "- If no accounts are provided, then only the caller will claim his rewards.",
+        ""
+      ],
+      "name": "claimRewards",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "boost",
+          "type": "bool"
+        },
+        {
+          "name": "money_markets",
+          "type": "List<Address>"
+        },
+        {
+          "name": "accounts",
+          "type": "List<Address>"
+        },
+        {
+          "name": "opt_min_boosted_rewards_out",
+          "type": "optional<BigUint>",
+          "multi_arg": true
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "Sends all rewards from all rewards batches for the given money markets to the given account.",
+        "",
+        "# Arguments:",
+        "",
+        "- `boost`: Whether to boost the rewards or not.",
+        "- `tokens`: An array of rewards tokens.",
+        "- `money_markets`: An array of money market addresses in which the rewards distribution will be done.",
+        "- `accounts`: An array of account addresses.",
+        "- `opt_min_boosted_rewards_out`: An optional minimum amount of boosted rewards out.",
+        "",
+        "# Notes:",
+        "",
+        "- If `boost` is enabled, then the rewards will be boosted using the rewards booster.",
+        "- If no money markets are specified, then all whitelisted money markets will be used.",
+        "- If a provided money market does not have any batch for the rewards tokens, then it will be ignored.",
+        "- If no accounts are provided, then only the caller will claim his rewards.",
+        ""
+      ],
+      "name": "claimRewardsTokens",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "boost",
+          "type": "bool"
+        },
+        {
+          "name": "tokens",
+          "type": "List<EgldOrEsdtTokenIdentifier>"
+        },
+        {
+          "name": "money_markets",
+          "type": "List<Address>"
+        },
+        {
+          "name": "accounts",
+          "type": "List<Address>"
+        },
+        {
+          "name": "opt_min_boosted_rewards_out",
+          "type": "optional<BigUint>",
+          "multi_arg": true
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "This endpoint allows users to stake tokens to start earning rewards. The user can specify the markets and their",
+        "corresponding amounts to stake. On the contrary, if no markets and amounts are specified, a default algorithm",
+        "based on the account collateral and current rewards batches will be used to determine the markets and amounts to",
+        "stake.",
+        "",
+        "# Arguments:",
+        "",
+        "- `markets`: An array of market addresses to stake.",
+        "- `amounts`: An array of amounts to stake for each respective money market specified in `markets`.",
+        ""
+      ],
+      "name": "stake",
+      "mutability": "mutable",
+      "payableInTokens": [
+        "*"
+      ],
+      "inputs": [
+        {
+          "name": "markets",
+          "type": "List<Address>"
+        },
+        {
+          "name": "amounts",
+          "type": "List<BigUint>"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "docs": [
+        "This endpoint allows users to unstake their staked tokens. This process will start a cooldown period after which",
+        "the user can claim his tokens. The user can specify the markets and their corresponding amounts to unstake. On",
+        "the contrary, if no markets and amounts are specified, a default algorithm based on the account collateral and",
+        "current rewards batches will be used to determine the final state of the portfolio positions.",
+        "",
+        "# Arguments:",
+        "",
+        "- `unstaked_amount`: The amount of tokens the user wish to unstake.",
+        "- `markets`: An array of market addresses to unstake from.",
+        "- `amounts`: An array of amounts to unstake from each money market specified in `markets`.",
+        "- `opt_max_cooldown_period` - The maximum accepted cooldown period for the claim.",
+        ""
+      ],
+      "name": "unstake",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "unstaked_amount",
+          "type": "BigUint"
+        },
+        {
+          "name": "markets",
+          "type": "List<Address>"
+        },
+        {
+          "name": "amounts",
+          "type": "List<BigUint>"
+        },
+        {
+          "name": "opt_max_cooldown_period",
+          "type": "optional<u64>",
+          "multi_arg": true
+        }
+      ],
+      "outputs": [
+        {
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "This endpoint allows users to unstake their staked tokens even if pricing is not operational. Users won't",
+        "collect any rewards in such cases, given that there is no way to compute meaningful penalties.",
+        "",
+        "# Arguments:",
+        "",
+        "- `markets`: An array of market addresses to unstake from.",
+        "- `opt_max_cooldown_period` - The maximum accepted cooldown period for the claim.",
+        ""
+      ],
+      "name": "emergencyUnstake",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "markets",
+          "type": "List<Address>"
+        },
+        {
+          "name": "opt_max_cooldown_period",
+          "type": "optional<u64>",
+          "multi_arg": true
+        }
+      ],
+      "outputs": [
+        {
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "This endpoint allows users to claim their unstaked tokens after the cooldown period has elapsed.",
+        "",
+        "# Arguments:",
+        "",
+        "- `claim_id`: The claim identifier.",
+        ""
+      ],
+      "name": "claim",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "claim_id",
+          "type": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "EsdtTokenPayment"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "This endpoint allows users to claim their tokens coming from multiple unstakes after the cooldown period has",
+        "elapsed for all of them.",
+        "",
+        "# Arguments:",
+        "",
+        "- `claim_ids`: An array of claim identifiers.",
+        ""
+      ],
+      "name": "claimMultiple",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "claim_ids",
+          "type": "variadic<u32>",
+          "multi_arg": true
+        }
+      ],
+      "outputs": [
+        {
+          "type": "EsdtTokenPayment"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "The current state of the Booster module."
+      ],
+      "name": "getState",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "State"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the token ID for staking."
+      ],
+      "name": "getStakeTokenId",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "TokenIdentifier"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the price oracle smart contract address."
+      ],
+      "name": "getPriceOracle",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "Address"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the controller smart contract address."
+      ],
+      "name": "getController",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "Address"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the rewards manager address."
+      ],
+      "name": "getRewardsManager",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "Address"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the rewards index for a given account and rewards token in the specified money market."
+      ],
+      "name": "getAccountBatchRewardsIndex",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "batch_id",
+          "type": "u32"
+        },
+        {
+          "name": "account",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the ID of the next rewards batch in the specified money market."
+      ],
+      "name": "getNextRewardsBatchId",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "getMaxRewardsBatches",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the maximum allowed slippage."
+      ],
+      "name": "getMaxSlippage",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the list of rewards batches in the specified money market."
+      ],
+      "name": "getRewardsBatches",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "variadic<RewardsBatch>",
+          "multi_result": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the current position of a rewards batch in the specified money market at the corresponding VecMapper."
+      ],
+      "name": "getRewardsBatchPosition",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "batch_id",
+          "type": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores staking ratio threshold."
+      ],
+      "name": "getStakingRatioThreshold",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the account staking ratio threshold."
+      ],
+      "name": "getAccountStakingRatioThreshold",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "account",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores price time threshold."
+      ],
+      "name": "getPriceTimeThreshold",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "getRebalanceMethod",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "RebalanceMethod"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the claim made by an account based on their claim ID."
+      ],
+      "name": "getAccountClaimsById",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "Address"
+        },
+        {
+          "name": "claim_id",
+          "type": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "Claim"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the next available claim ID for a particular account."
+      ],
+      "name": "getNextClaimId",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the rewards batch booster for a given rewards token identifier."
+      ],
+      "name": "getRewardsBooster",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "token_id",
+          "type": "EgldOrEsdtTokenIdentifier"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "RewardsBooster"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores wrapped EGLD smart contract address."
+      ],
+      "name": "getEgldWrapper",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "Address"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the token identifier of the wrapped EGLD token."
+      ],
+      "name": "getWegldId",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "TokenIdentifier"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the xExchange Router address."
+      ],
+      "name": "getRouter",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "Address"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores the boosting state."
+      ],
+      "name": "getBoostingState",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "State"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Stores whether boosting is or not supported."
+      ],
+      "name": "isRewardsBatchBoostingSupported",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "bool"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "docs": [
+        "Event emitted when the pending admin is updated."
+      ],
+      "identifier": "new_pending_admin_event",
+      "inputs": [
+        {
+          "name": "pending_admin",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when the admin is updated."
+      ],
+      "identifier": "new_admin_event",
+      "inputs": [
+        {
+          "name": "admin",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when the booster state is modified"
+      ],
+      "identifier": "set_state_event",
+      "inputs": [
+        {
+          "name": "state",
+          "type": "State",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when the staking token identifier is set."
+      ],
+      "identifier": "set_stake_token_id_event",
+      "inputs": [
+        {
+          "name": "token_id",
+          "type": "TokenIdentifier",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when a new rebalance method is set."
+      ],
+      "identifier": "new_rebalance_method_event",
+      "inputs": [
+        {
+          "name": "rebalance_method",
+          "type": "RebalanceMethod",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when a new pricing oracle smart contract address is set."
+      ],
+      "identifier": "new_price_oracle_event",
+      "inputs": [
+        {
+          "name": "price_oracle",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when the controller address is set."
+      ],
+      "identifier": "new_controller_event",
+      "inputs": [
+        {
+          "name": "controller",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when a new cooldown period is set."
+      ],
+      "identifier": "new_cooldown_period_event",
+      "inputs": [
+        {
+          "name": "cooldown_period",
+          "type": "u64",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when a new maximum amount of rewards batches is defined for a given money market."
+      ],
+      "identifier": "new_max_rewards_batches_event",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "max_rewards_batches",
+          "type": "u32",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "new_max_slippage_event",
+      "inputs": [
+        {
+          "name": "max_slippage",
+          "type": "BigUint",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when a new rewards manager is set."
+      ],
+      "identifier": "new_rewards_manager_event",
+      "inputs": [
+        {
+          "name": "rewards_manager",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when a new account price integral is set."
+      ],
+      "identifier": "set_account_price_integral_event",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "account",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "timestamp",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "price_integral",
+          "type": "BigUint",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when an account changes its staking ratio threshold."
+      ],
+      "identifier": "set_account_staking_ratio_threshold_event",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "account",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "staking_ratio_threshold",
+          "type": "BigUint",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when account rewards are distributed."
+      ],
+      "identifier": "account_rewards_distributed_event",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "rewards_batch",
+          "type": "RewardsBatch",
+          "indexed": true
+        },
+        {
+          "name": "account_rewards",
+          "type": "BigUint",
+          "indexed": true
+        },
+        {
+          "name": "penalty_rewards",
+          "type": "BigUint",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when user rewards are claimed."
+      ],
+      "identifier": "rewards_claimed_event",
+      "inputs": [
+        {
+          "name": "claimer",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "rewards_batch",
+          "type": "RewardsBatch",
+          "indexed": true
+        },
+        {
+          "name": "claimed_amount",
+          "type": "BigUint",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when user rewards are claimed."
+      ],
+      "identifier": "rewards_token_claimed_event",
+      "inputs": [
+        {
+          "name": "claimer",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "rewards_token_id",
+          "type": "EgldOrEsdtTokenIdentifier",
+          "indexed": true
+        },
+        {
+          "name": "claimed_amount",
+          "type": "BigUint",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when a rewards batch is set."
+      ],
+      "identifier": "set_rewards_batch_event",
+      "inputs": [
+        {
+          "name": "caller",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "rewards_batch",
+          "type": "RewardsBatch",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when a rewards batch adds more rewards."
+      ],
+      "identifier": "add_rewards_batch_event",
+      "inputs": [
+        {
+          "name": "caller",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "rewards_batch",
+          "type": "RewardsBatch",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when a rewards batch is cancelled."
+      ],
+      "identifier": "cancel_rewards_batch_event",
+      "inputs": [
+        {
+          "name": "caller",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "rewards_batch",
+          "type": "RewardsBatch",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when a rewards batch is removed."
+      ],
+      "identifier": "remove_rewards_batch_event",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "batch_id",
+          "type": "u32",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when the rewards batch speed is updated."
+      ],
+      "identifier": "update_rewards_batch_speed_event",
+      "inputs": [
+        {
+          "name": "caller",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "rewards_batch",
+          "type": "RewardsBatch",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when the remaining period of a rewards batch is updated."
+      ],
+      "identifier": "update_rewards_batch_remaining_period_event",
+      "inputs": [
+        {
+          "name": "caller",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "rewards_batch",
+          "type": "RewardsBatch",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when the rewards batch state is updated."
+      ],
+      "identifier": "rewards_batches_updated_event",
+      "inputs": [
+        {
+          "name": "rewards_batch",
+          "type": "RewardsBatch",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when penalized rewards are withdrawn."
+      ],
+      "identifier": "withdraw_penalized_rewards_event",
+      "inputs": [
+        {
+          "name": "admin",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "rewards_token_id",
+          "type": "EgldOrEsdtTokenIdentifier",
+          "indexed": true
+        },
+        {
+          "name": "amount",
+          "type": "BigUint",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when a user stakes his tokens."
+      ],
+      "identifier": "stake_event",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "staked_amount",
+          "type": "BigUint",
+          "indexed": true
+        },
+        {
+          "name": "default_portfolio",
+          "type": "bool",
+          "indexed": true
+        },
+        {
+          "name": "markets",
+          "type": "List<Address>",
+          "indexed": true
+        },
+        {
+          "name": "amounts",
+          "type": "List<BigUint>",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when a user unstakes his previously staked tokens."
+      ],
+      "identifier": "unstake_event",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "unstaked_amount",
+          "type": "BigUint",
+          "indexed": true
+        },
+        {
+          "name": "default_portfolio",
+          "type": "bool",
+          "indexed": true
+        },
+        {
+          "name": "claim",
+          "type": "Claim",
+          "indexed": true
+        },
+        {
+          "name": "markets",
+          "type": "List<Address>",
+          "indexed": true
+        },
+        {
+          "name": "amounts",
+          "type": "List<BigUint>",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when a user manually adjusts his staking across different markets."
+      ],
+      "identifier": "rebalance_portfolio_event",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "markets",
+          "type": "List<Address>",
+          "indexed": true
+        },
+        {
+          "name": "amounts",
+          "type": "List<BigUint>",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when a user claims a specific claim ID to get its own previously unstaked tokens."
+      ],
+      "identifier": "claim_event",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "claim_id",
+          "type": "u32",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when a new staking ratio threshold is set."
+      ],
+      "identifier": "new_staking_ratio_threshold_event",
+      "inputs": [
+        {
+          "name": "staking_ratio_threshold",
+          "type": "BigUint",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Emitted when a new price time threshold is set."
+      ],
+      "identifier": "new_price_time_threshold_event",
+      "inputs": [
+        {
+          "name": "price_time_threshold",
+          "type": "u64",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "update_price_integral_event",
+      "inputs": [
+        {
+          "name": "money_market",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "timestamp",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "price_integral",
+          "type": "BigUint",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when rewards batch boosting is supported."
+      ],
+      "identifier": "support_rewards_batch_boosting_event",
+      "inputs": []
+    },
+    {
+      "docs": [
+        "Event emitted when rewards batch boosting is enabled."
+      ],
+      "identifier": "enable_rewards_batch_boosting_event",
+      "inputs": []
+    },
+    {
+      "docs": [
+        "Event emitted when rewards batch boosting is disabled."
+      ],
+      "identifier": "disable_rewards_batch_boosting_event",
+      "inputs": []
+    },
+    {
+      "docs": [
+        "Event emitted when rewards are boosted for a specific rewards token."
+      ],
+      "identifier": "boost_rewards_event",
+      "inputs": [
+        {
+          "name": "rewards_batch_booster",
+          "type": "RewardsBooster",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when a booster is updated for a specific rewards token."
+      ],
+      "identifier": "update_booster_event",
+      "inputs": [
+        {
+          "name": "rewards_batch_booster",
+          "type": "RewardsBooster",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when a booster is cancelled for a specific rewards token."
+      ],
+      "identifier": "cancel_booster_event",
+      "inputs": [
+        {
+          "name": "token_id",
+          "type": "EgldOrEsdtTokenIdentifier",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "docs": [
+        "Event emitted when boosted rewards are claimed."
+      ],
+      "identifier": "boosted_rewards_claimed_event",
+      "inputs": [
+        {
+          "name": "claimer",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "rewards_batch_booster",
+          "type": "RewardsBooster",
+          "indexed": true
+        },
+        {
+          "name": "claimed_amount",
+          "type": "BigUint",
+          "indexed": true
+        }
+      ]
+    }
+  ],
+  "hasCallback": false,
+  "types": {
+    "Claim": {
+      "type": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": "u32"
+        },
+        {
+          "name": "amount",
+          "type": "BigUint"
+        },
+        {
+          "name": "claim_timestamp",
+          "type": "u64"
+        },
+        {
+          "name": "claimed",
+          "type": "bool"
+        }
+      ]
+    },
+    "EsdtTokenPayment": {
+      "type": "struct",
+      "fields": [
+        {
+          "name": "token_identifier",
+          "type": "TokenIdentifier"
+        },
+        {
+          "name": "token_nonce",
+          "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "BigUint"
+        }
+      ]
+    },
+    "RebalanceMethod": {
+      "type": "enum",
+      "variants": [
+        {
+          "name": "Default",
+          "discriminant": 0
+        },
+        {
+          "name": "Custom",
+          "discriminant": 1
+        }
+      ]
+    },
+    "RewardsBatch": {
+      "type": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": "u32"
+        },
+        {
+          "name": "money_market",
+          "type": "Address"
+        },
+        {
+          "name": "token_id",
+          "type": "EgldOrEsdtTokenIdentifier"
+        },
+        {
+          "name": "amount",
+          "type": "BigUint"
+        },
+        {
+          "name": "distributed_amount",
+          "type": "BigUint"
+        },
+        {
+          "name": "speed",
+          "type": "BigUint"
+        },
+        {
+          "name": "index",
+          "type": "BigUint"
+        },
+        {
+          "name": "last_time",
+          "type": "u64"
+        },
+        {
+          "name": "end_time",
+          "type": "u64"
+        }
+      ]
+    },
+    "RewardsBooster": {
+      "type": "struct",
+      "fields": [
+        {
+          "name": "token_id",
+          "type": "EgldOrEsdtTokenIdentifier"
+        },
+        {
+          "name": "premium",
+          "type": "BigUint"
+        },
+        {
+          "name": "amount_left",
+          "type": "BigUint"
+        },
+        {
+          "name": "distributed_amount",
+          "type": "BigUint"
+        },
+        {
+          "name": "swap_path",
+          "type": "List<SwapStep>"
+        }
+      ]
+    },
+    "State": {
+      "type": "enum",
+      "variants": [
+        {
+          "name": "Inactive",
+          "discriminant": 0
+        },
+        {
+          "name": "Active",
+          "discriminant": 1
+        },
+        {
+          "name": "Finalized",
+          "discriminant": 2
+        }
+      ]
+    },
+    "SwapStep": {
+      "type": "struct",
+      "fields": [
+        {
+          "name": "pair_address",
+          "type": "Address"
+        },
+        {
+          "name": "input_token_id",
+          "type": "TokenIdentifier"
+        },
+        {
+          "name": "output_token_id",
+          "type": "TokenIdentifier"
+        }
+      ]
+    }
+  }
+}

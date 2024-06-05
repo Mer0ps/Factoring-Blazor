@@ -1,0 +1,41 @@
+﻿@page "/"
+@using Mx.Blazor.DApp.Client.Shared.Components.Chart;
+<PageTitle>Account</PageTitle>
+
+<div class="container">
+    @if (!WalletConnected)
+    {
+        <div class="d-flex flex-column justify-content-center mt-5">
+            <h3 class="text-center mb-4">Please connect to a wallet</h3>
+            <div class="btn btn-primary btn-lg px-4 mx-auto" data-bs-toggle="modal" data-bs-target="#WalletConnectionsModal">Login</div>
+        </div>
+    }
+    else
+    {
+        @if (DappAccount.AccountDto != null || DappAccount.IsDappAdmin)
+        {
+            <div class="d-flex flex-column justify-content-center mt-5">
+                <h1 class="text-center mb-4">Statistics</h1>
+            </div>        
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <TotalFinancedChart />
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <TotalCollectedFeeChart />
+                    </div>
+                    @if (DappAccount.IsDappAdmin)
+                    {
+                        <div class="col-12 col-md-6">
+                            <OverdueChart />
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+    }
+</div>
+
+

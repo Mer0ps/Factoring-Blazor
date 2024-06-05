@@ -1,0 +1,10 @@
+﻿.no-address {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+.bi-window-x {
+    font-size: 3em;
+}

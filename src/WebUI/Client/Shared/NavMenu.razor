@@ -1,0 +1,95 @@
+﻿@using Mx.NET.SDK.Configuration;
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">InvoX @GetCompanyName()</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <div class="d-grid gap-2 py-3 px-5">
+        @if (!WalletConnected)
+        {
+            <button class="btn-item mb-1" data-bs-toggle="modal" data-bs-target="#WalletConnectionsModal">Login</button>
+        }
+        else
+        {
+            <button class="btn-item btn-item-outline" @onclick="Disconnect">
+                Logout
+            </button>
+        }
+    </div>
+    <div class="border-bottom border-secondary pt-1"></div>
+
+    <nav class="flex-column">
+        @if (WalletConnected && DappAccount!= null)
+        {
+            @if (DappAccount.IsDappAdmin)
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="administration">
+                        <i class="bi bi-list-ul"></i> SC Administration
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="liquidity">
+                        <i class="bi bi-list-ul"></i> Liquidity
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="accounts">
+                        <i class="bi bi-list-ul"></i> Accounts
+                    </NavLink>
+                </div>
+            }
+            else
+            {
+                @if (DappAccount.AccountDto != null)
+                {
+                    @if (DappAccount.AccountDto.Score.HasValue)
+                    {
+                        <MudContainer Class="d-flex flex-column align-items-center">
+                            <div class="progress-wrapper">
+                                <MudProgressCircular Value="@DappAccount.AccountDto.Score.Value" Size=Size.Medium Color="@GetProgressColor(DappAccount.AccountDto.Score.Value)" Max="100" />
+                                <div class="progress-value" style="color:@GetProgressColorHex(DappAccount.AccountDto.Score.Value)">@DappAccount.AccountDto.Score.Value</div>
+                            </div>
+                            <MudText Typo="Typo.subtitle1">Trust Score</MudText>
+                        </MudContainer>
+                    }
+
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="dashboard">
+                            <i class="bi bi-pencil-fill"></i> Dashboard
+                        </NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="contracts">
+                            <i class="bi bi-pencil-fill"></i> Contracts
+                        </NavLink>
+                    </div>                
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="uploadInvoice">
+                            <i class="bi bi-file-earmark-arrow-up"></i> Upload invoice
+                        </NavLink>
+                    </div>                
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="invoices">
+                            <i class="bi bi-receipt-cutoff"></i> Invoices
+                        </NavLink>
+                    </div>
+                }
+                else
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="account">
+                            <i class="bi bi-list-ul"></i> Create Account
+                        </NavLink>
+                    </div>
+                }
+            }
+        }
+    </nav>
+</div>

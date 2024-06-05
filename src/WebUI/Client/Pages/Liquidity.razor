@@ -1,0 +1,94 @@
+﻿@page "/liquidity"
+@using Domain.Enums
+<PageTitle>Liquidity</PageTitle>
+
+<div class="container">
+    @if (!WalletConnected)
+    {
+        <div class="d-flex flex-column justify-content-center mt-5">
+            <h3 class="text-center mb-4">Please connect to a wallet</h3>
+            <div class="btn btn-primary btn-lg px-4 mx-auto" data-bs-toggle="modal" data-bs-target="#WalletConnectionsModal">Login</div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column justify-content-center mt-4">
+            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" ActivePanelIndexChanged="HandleTabChange">
+               
+                <MudTabPanel Text="Add Funds">
+
+                    <EditForm Model="Funds" OnValidSubmit="HandleAddFundsValidSubmit">
+                        <DataAnnotationsValidator />
+
+                            <div class="d-flex flex-row mb-4">
+                                <MudTextField @bind-Value="Funds.Amount" For="@(() => Funds.Amount)" Required="true" Immediate="true" Label="Amount" Class="me-2" Placeholder="e.g. 500,5" />
+
+                                <MudSelect T="string" @bind-Value="@Funds.TokenIdentifier" For="@(() => Funds.TokenIdentifier)" Label="Token Identifier"
+                                           AnchorOrigin="Origin.BottomCenter" Required="true" SelectedValuesChanged="HandleTokenIdentifierChanged">
+                                    @foreach (var token in Funds.TokenIdentifiers)
+                                    {
+                                        <MudSelectItem Value="@token.TokenIdentifier">@token.TokenIdentifier</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </div>
+
+                            @if (Funds.CurrentAmountInSc != null)
+                            {
+                                <MudText>Funds available in Sc : @Funds.CurrentAmountInSc</MudText>
+                            }
+
+                        <MudButton ButtonType="ButtonType.Submit" @onclick="@(()=> Funds.IsAdd = true)" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add funds</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit" @onclick="@(()=> Funds.IsAdd = false)" Disabled="Funds.CurrentAmountInSc is null" Variant="Variant.Filled" Color="Color.Error" Class="ml-auto">Withdraw funds</MudButton>
+                        
+                    </EditForm>
+                </MudTabPanel>
+                <MudTabPanel Text="Hatom">
+
+                    <div class="d-flex flex-column justify-content-center mt-4">
+                        <div class="d-flex flex-column p-4 panel mx-auto mw-600 mb-5">
+                            <MudCard>
+                                <MudCardContent>
+                                    <MudText>Claim rewards</MudText>
+                                        <MudText Typo="Typo.body2">
+                                            These rewards come from the collateralization of unused liquidity on the HATOM platform.
+                                        </MudText>
+                                    </MudCardContent>
+                                    <MudCardActions>
+                                        <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="ClaimRewards">Claim</MudButton>
+                                    </MudCardActions>
+                                </MudCard>
+                            </div>
+                        </div>
+
+                    <MudTable Items="@tokens" Hover="true" ReadOnly="false" CanCancelEdit="true" Breakpoint="Breakpoint.Sm"
+                              IsEditRowSwitchingBlocked="true" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Token Identifier</MudTh>
+                            <MudTh>Amount available</MudTh>
+                            <MudTh>Supply</MudTh>
+                            <MudTh>Collateral</MudTh>
+                        </HeaderContent>
+                        <RowTemplate Context="token">
+                            <MudTd DataLabel="Token Identifier">@token.TokenIdentifer</MudTd>
+                            <MudTd DataLabel="Amount available">@token.Amount</MudTd>
+                            <MudTd DataLabel="Supply">@token.AmountSupply</MudTd>
+                            <MudTd DataLabel="Collateral">@token.AmountCollateral</MudTd>
+                            <MudTd DataLabel="">
+                                    <MudButton @onclick="() => OpenDialog(DialogHatomType.Mint, token.TokenIdentifer, token.MoneyMarket)" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto me-2">Add funds</MudButton>
+                                    @if (!string.IsNullOrEmpty(token.AmountCollateral))
+                                    {
+                                    <MudButton @onclick="() => OpenDialog(DialogHatomType.Exit, token.HTokenIdentifer, token.MoneyMarket)" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto me-2">Exit market</MudButton>
+                                    }
+                                    @if (!string.IsNullOrEmpty(token.AmountSupply))
+                                    {
+                                    <MudButton @onclick="() => OpenDialog(DialogHatomType.Redeem, token.HTokenIdentifer, token.MoneyMarket)" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto me-2">Withdraw</MudButton>
+                                    }
+                            </MudTd>
+                        </RowTemplate>
+                        </MudTable>
+
+                </MudTabPanel>
+            </MudTabs>
+        </div>
+    }
+</div>

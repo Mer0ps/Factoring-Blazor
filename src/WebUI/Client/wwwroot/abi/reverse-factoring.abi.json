@@ -1,0 +1,125 @@
+﻿{
+  "buildInfo": {
+    "rustc": {
+      "version": "1.72.0-nightly",
+      "commitHash": "065a1f5df9c2f1d93269e4d25a2acabbddb0db8d",
+      "commitDate": "2023-06-21",
+      "channel": "Nightly",
+      "short": "rustc 1.72.0-nightly (065a1f5df 2023-06-21)"
+    },
+    "contractCrate": {
+      "name": "reverse-factoring",
+      "version": "0.0.0"
+    },
+    "framework": {
+      "name": "multiversx-sc",
+      "version": "0.44.0"
+    }
+  },
+  "name": "ReverseFactoringContract",
+  "constructor": {
+    "inputs": [],
+    "outputs": []
+  },
+  "endpoints": [
+    {
+      "name": "addTemplate",
+      "onlyOwner": true,
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "factoring_template_address",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "addCompany",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "company",
+          "type": "Company"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "addCompanyAdministrator",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "company_id",
+          "type": "u64"
+        },
+        {
+          "name": "new_admin",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "getCompanies",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "id",
+          "type": "u64"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "Company"
+        }
+      ]
+    },
+    {
+      "name": "addUserToAdminList",
+      "onlyOwner": true,
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "removeUserFromAdminList",
+      "onlyOwner": true,
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    }
+  ],
+  "events": [],
+  "esdtAttributes": [],
+  "hasCallback": false,
+  "types": {
+    "Company": {
+      "type": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": "bytes"
+        },
+        {
+          "name": "administrators",
+          "type": "List<Address>"
+        },
+        {
+          "name": "is_kyc",
+          "type": "bool"
+        }
+      ]
+    }
+  }
+}
